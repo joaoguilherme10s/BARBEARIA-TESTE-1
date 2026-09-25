@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barbearia Estilo & Corte - Agendamento</title>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+    body { background-color: #0f172a; color: #f8fafc; display: flex; justify-content: center; padding: 20px 10px; }
+    .app-card { width: 100%; max-width: 450px; background: #1e293b; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); border: 1px solid #334155; }
+    
+    .hero-banner {
+      width: 100%; height: 180px; background-color: #1e293b;
+      background-image: linear-gradient(180deg, rgba(15, 23, 42, 0.4) 0%, rgba(30, 41, 59, 1) 100%),
+                        url('https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&q=80&w=800');
+      background-position: center; background-size: cover; background-repeat: no-repeat;
+      display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; text-align: center;
+    }
+    .hero-banner h1 { font-size: 1.5rem; color: #fff; text-shadow: 0 2px 6px rgba(0,0,0,0.9); }
+    .hero-banner p { font-size: 0.85rem; color: #38bdf8; font-weight: 700; text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
+
+    .card-body { padding: 20px; }
+    .nav-tabs { display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+    .tab-btn { flex: 1; padding: 10px 5px; background: #0f172a; color: #94a3b8; border: 1px solid #334155; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.75rem; }
+    .tab-btn.active { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
+
+    .step-title { font-size: 1.1rem; margin-bottom: 12px; color: #38bdf8; margin-top: 15px; }
+    .services-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+    
+    .service-card { background: #334155; padding: 12px 16px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 2px solid transparent; user-select: none; }
+    .service-card.selected { border-color: #38bdf8 !important; background: #0f172a !important; }
+
+    .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+    .time-slot { padding: 12px 8px; border-radius: 8px; text-align: center; font-size: 0.9rem; font-weight: 600; cursor: pointer; background: #064e3b; color: #34d399; border: 1px solid #059669; user-select: none; }
+    .time-slot.selected { background: #38bdf8 !important; color: #0f172a !important; border-color: #38bdf8 !important; }
+    .time-slot.disabled { background: #334155 !important; color: #64748b !important; border-color: #475569 !important; cursor: not-allowed; opacity: 0.6; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 6px; }
+    .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; font-size: 0.95rem; color-scheme: dark; }
+
+    .btn-primary { width: 100%; padding: 14px; background: #38bdf8; color: #0f172a; border: none; border-radius: 10px; font-weight: bold; font-size: 1rem; cursor: pointer; margin-top: 10px; }
+    .btn-primary:disabled { background: #64748b; cursor: not-allowed; }
+    .btn-danger { padding: 6px 12px; background: #ef4444; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
+    .btn-secondary { padding: 6px 12px; background: #475569; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; margin-bottom: 10px; }
+
+    .admin-card { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .admin-card-info p { font-size: 0.85rem; color: #cbd5e1; }
+    .admin-card-info strong { color: #38bdf8; }
+  </style>
+</head>
+<body>
+
+<div class="app-card">
+  <div class="hero-banner">
+    <h1>Barbearia Estilo & Corte</h1>
+    <p>Agendamento Rápido & Online</p>
+  </div>
+
+  <div class="card-body">
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tabBook" onclick="switchTab('book')">➕ Agendar</button>
+      <button class="tab-btn" id="tabConsult" onclick="switchTab('consult')">🔍 Minha Reserva</button>
+      <button class="tab-btn" id="tabAdmin" onclick="switchTab('admin')">🔒 Barbeiro</button>
+    </div>
+
+    <!-- ABA 1: CLIENTE AGENDAR -->
+    <div id="sectionBook">
+      <div class="step-title">1. Selecione o Serviço</div>
+      <div class="services-grid">
+        <div class="service-card" onclick="clickService(this, 'Corte Degradê', 30)">
+          <span>Corte Degradê</span><strong>R$ 30,00</strong>
+        </div>
+        <div class="service-card" onclick="clickService(this, 'Barba Completa', 25)">
+          <span>Barba Completa</span><strong>R$ 25,00</strong>
+        </div>
+        <div class="service-card" onclick="clickService(this, 'Combo Cabelo + Barba', 50)">
+          <span>Combo Cabelo + Barba</span><strong>R$ 50,00</strong>
+        </div>
+      </div>
+
+      <div class="step-title">2. Escolha a Data</div>
+      <div class="form-group">
+        <label for="bookingDate" style="display:none;">Data do agendamento</label>
+        <input type="date" id="bookingDate" onchange="onDateChange()">
+      </div>
+
+      <div class="step-title">3. Escolha o Horário</div>
+      <div class="time-grid" id="timeGrid">
+        <div class="time-slot" onclick="clickTime(this, '09:00')">09:00</div>
+        <div class="time-slot" onclick="clickTime(this, '10:00')">10:00</div>
+        <div class="time-slot" onclick="clickTime(this, '11:00')">11:00</div>
+        <div class="time-slot" onclick="clickTime(this, '14:00')">14:00</div>
+        <div class="time-slot" onclick="clickTime(this, '15:00')">15:00</div>
+        <div class="time-slot" onclick="clickTime(this, '16:00')">16:00</div>
+      </div>
+
+      <div class="step-title">4. Seus Dados</div>
+      <div class="form-group">
+        <label for="clientName">Seu Nome</label>
+        <input type="text" id="clientName" placeholder="Ex: João Silva" maxlength="50">
+      </div>
+      <div class="form-group">
+        <label for="clientPhone">Seu WhatsApp (apenas números com DDD)</label>
+        <input type="tel" id="clientPhone" placeholder="Ex: 62996898356" maxlength="15">
+      </div>
+
+      <button class="btn-primary" id="btnConfirmBooking" onclick="confirmBooking()">Confirmar no WhatsApp</button>
+    </div>
+
+    <!-- ABA 2: CONSULTAR RESERVA -->
+    <div id="sectionConsult" style="display: none;">
+      <div class="step-title">Buscar Agendamento</div>
+      <div class="form-group">
+        <label for="searchPhone">WhatsApp Cadastrado</label>
+        <input type="tel" id="searchPhone" placeholder="Ex: 62996898356">
+      </div>
+      <button class="btn-primary" onclick="searchBookingByPhone()">Buscar Reserva</button>
+      <div id="searchResult" style="margin-top: 15px;"></div>
+    </div>
+
+    <!-- ABA 3: PAINEL DO BARBEIRO -->
+    <div id="sectionAdmin" style="display: none;">
+      <div id="adminLogin">
+        <div class="step-title">Acesso Restrito (Barbeiro)</div>
+        <div class="form-group">
+          <label for="adminEmail">E-mail do Barbeiro</label>
+          <input type="email" id="adminEmail" placeholder="seuemail@barbearia.com">
+        </div>
+        <div class="form-group">
+          <label for="adminPassword">Senha</label>
+          <input type="password" id="adminPassword" placeholder="Digite sua senha">
+        </div>
+        <button class="btn-primary" onclick="loginAdmin()">Entrar com Segurança</button>
+      </div>
+
+      <div id="adminPanel" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="step-title" style="margin: 0;">Agenda em Tempo Real</div>
+          <button class="btn-secondary" onclick="logoutAdmin()">Sair 🚪</button>
+        </div>
+        <div id="adminBookingsList" style="margin-top: 15px;">Carregando agendamentos...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "https://xasgbkydiqeprlyoikbl.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_xeqdK1Sh1twETmv8fOXsCw_PPdpRU20";
+  const BARBER_WHATSAPP = "5562996898356"; 
+
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  var selectedService = null;
+  var selectedTime = null;
+  var allBookings = [];
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  window.addEventListener('DOMContentLoaded', function() {
+    var today = new Date().toISOString().split('T')[0];
+    var dateInput = document.getElementById('bookingDate');
+    dateInput.value = today;
+    dateInput.min = today;
+
+    fetchBookings();
+    checkAdminSession();
+  });
+
+  async function checkAdminSession() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      document.getElementById('adminLogin').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      renderAdminPanel();
+    }
+  }
+
+  async function fetchBookings() {
+    const { data, error } = await supabaseClient.from('bookings').select('*');
+    if (!error && data) {
+      allBookings = data;
+      updateOccupiedSlots();
+      renderAdminPanel();
+    }
+  }
+
+  function onDateChange() {
+    selectedTime = null;
+    updateOccupiedSlots();
+  }
+
+  function updateOccupiedSlots() {
+    var selectedDateRaw = document.getElementById('bookingDate').value;
+    if (!selectedDateRaw) return;
+
+    var parts = selectedDateRaw.split('-');
+    var formattedSelectedDate = parts[2] + '/' + parts[1] + '/' + parts[0];
+
+    var occupiedTimes = allBookings
+      .filter(function(b) { return b.date === formattedSelectedDate; })
+      .map(function(b) { return b.time; });
+
+    var slots = document.querySelectorAll('.time-slot');
+    
+    slots.forEach(function(slot) {
+      var time = slot.innerText.trim();
+      if (occupiedTimes.includes(time)) {
+        slot.classList.add('disabled');
+        slot.classList.remove('selected');
+      } else {
+        slot.classList.remove('disabled');
+        if (selectedTime === time) slot.classList.add('selected');
+      }
+    });
+  }
+
+  function clickService(el, name, price) {
+    var cards = document.querySelectorAll('.service-card');
+    cards.forEach(function(c) { c.classList.remove('selected'); });
+    el.classList.add('selected');
+    selectedService = { name: name, price: price };
+  }
+
+  function clickTime(el, time) {
+    if (el.classList.contains('disabled')) return;
+    var slots = document.querySelectorAll('.time-slot');
+    slots.forEach(function(s) { s.classList.remove('selected'); });
+    el.classList.add('selected');
+    selectedTime = time;
+  }
+
+  function switchTab(tab) {
+    document.getElementById('sectionBook').style.display = tab === 'book' ? 'block' : 'none';
+    document.getElementById('sectionConsult').style.display = tab === 'consult' ? 'block' : 'none';
+    document.getElementById('sectionAdmin').style.display = tab === 'admin' ? 'block' : 'none';
+
+    document.getElementById('tabBook').className = 'tab-btn' + (tab === 'book' ? ' active' : '');
+    document.getElementById('tabConsult').className = 'tab-btn' + (tab === 'consult' ? ' active' : '');
+    document.getElementById('tabAdmin').className = 'tab-btn' + (tab === 'admin' ? ' active' : '');
+
+    if (tab === 'admin') checkAdminSession();
+  }
+
+  async function confirmBooking() {
+    var btn = document.getElementById('btnConfirmBooking');
+    var name = document.getElementById('clientName').value.trim();
+    var phone = document.getElementById('clientPhone').value.trim();
+    var dateRaw = document.getElementById('bookingDate').value;
+
+    if (!selectedService) return alert("Por favor, selecione um serviço!");
+    if (!dateRaw) return alert("Por favor, selecione uma data no calendário!");
+    if (!selectedTime) return alert("Por favor, selecione um horário!");
+    if (!name || !phone) return alert("Por favor, preencha seu nome e telefone!");
+
+    var parts = dateRaw.split('-');
+    var formattedDate = parts[2] + '/' + parts[1] + '/' + parts[0];
+
+    btn.disabled = true;
+    btn.innerText = "Processando...";
+
+    const { error } = await supabaseClient.from('bookings').insert([
+      { name: name, phone: phone, service: selectedService.name, price: selectedService.price, time: selectedTime, date: formattedDate }
+    ]);
+
+    if (error) {
+      btn.disabled = false;
+      btn.innerText = "Confirmar no WhatsApp";
+      
+      if (error.code === '23505') {
+        alert("Ops! Esse horário acabou de ser reservado por outra pessoa. Por favor, escolha outro horário.");
+        fetchBookings();
+      } else {
+        alert("Erro ao salvar: " + error.message);
+      }
+      return;
+    }
+
+    var msg = "Olá! Acabei de agendar pelo site:%0A%0A👤 *Cliente:* " + encodeURIComponent(name) + 
+              "%0A✂️ *Serviço:* " + encodeURIComponent(selectedService.name) + 
+              "%0A📅 *Data:* " + formattedDate +
+              "%0A⏰ *Horário:* " + selectedTime + 
+              "%0A💰 *Valor:* R$ " + selectedService.price + ",00";
+
+    window.open("https://api.whatsapp.com/send?phone=" + BARBER_WHATSAPP + "&text=" + msg, '_blank');
+
+    alert("Agendamento efetuado e salvo no sistema!");
+    document.getElementById('clientName').value = '';
+    document.getElementById('clientPhone').value = '';
+    btn.disabled = false;
+    btn.innerText = "Confirmar no WhatsApp";
+    
+    fetchBookings();
+  }
+
+  function searchBookingByPhone() {
+    var phone = document.getElementById('searchPhone').value.trim();
+    var resultDiv = document.getElementById('searchResult');
+    resultDiv.innerHTML = '';
+
+    var foundList = allBookings.filter(function(b) { return b.phone === phone; });
+
+    if (foundList.length > 0) {
+      foundList.forEach(function(found) {
+        resultDiv.innerHTML += 
+          '<div style="background: #0f172a; border: 2px dashed #38bdf8; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 10px;">' +
+            '<span style="color:#34d399; font-weight:bold;">🟢 RESERVA ATIVA</span>' +
+            '<p style="margin-top:8px;"><strong>Serviço:</strong> ' + escapeHtml(found.service) + '</p>' +
+            '<p><strong>Data:</strong> ' + escapeHtml(found.date) + ' às <strong>' + escapeHtml(found.time) + '</strong></p>' +
+            '<p><strong>Valor:</strong> R$ ' + escapeHtml(found.price) + ',00</p>' +
+          '</div>';
+      });
+    } else {
+      resultDiv.innerHTML = '<p style="color:#ef4444; text-align:center;">Nenhum agendamento ativo para este número.</p>';
+    }
+  }
+
+  async function loginAdmin() {
+    var email = document.getElementById('adminEmail').value.trim();
+    var pass = document.getElementById('adminPassword').value;
+
+    if (!email || !pass) return alert("Digite o e-mail e a senha!");
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: pass
+    });
+
+    if (error) {
+      alert("Erro ao entrar: " + error.message);
+    } else {
+      document.getElementById('adminLogin').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      renderAdminPanel();
+    }
+  }
+
+  async function logoutAdmin() {
+    await supabaseClient.auth.signOut();
+    document.getElementById('adminLogin').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+  }
+
+  function renderAdminPanel() {
+    var listDiv = document.getElementById('adminBookingsList');
+    if (!listDiv) return;
+    listDiv.innerHTML = '';
+
+    if (allBookings.length === 0) {
+      listDiv.innerHTML = '<p style="color:#94a3b8; font-size:0.9rem;">Nenhum agendamento ativo no momento.</p>';
+      return;
+    }
+
+    allBookings.forEach(function(b) {
+      listDiv.innerHTML += 
+        '<div class="admin-card">' +
+          '<div class="admin-card-info">' +
+            '<strong>📅 ' + escapeHtml(b.date) + ' - ' + escapeHtml(b.time) + '</strong>' +
+            '<p>👤 ' + escapeHtml(b.name) + ' (' + escapeHtml(b.service) + ')</p>' +
+            '<p>📱 ' + escapeHtml(b.phone) + ' | R$ ' + escapeHtml(b.price) + ',00</p>' +
+          '</div>' +
+          '<button class="btn-danger" onclick="cancelBooking(' + b.id + ')">Cancelar</button>' +
+        '</div>';
+    });
+  }
+
+  async function cancelBooking(id) {
+    if (confirm("Deseja cancelar este agendamento?")) {
+      const { error } = await supabaseClient.from('bookings').delete().eq('id', id);
+      if (!error) {
+        fetchBookings();
+      } else {
+        alert("Erro ao cancelar: " + error.message);
+      }
+    }
+  }
+</script>
+
+</body>
+</html>
